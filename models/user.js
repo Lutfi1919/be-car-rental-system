@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     phoneNum: DataTypes.STRING,
+    is_verified: { 
+      type: DataTypes.ENUM('unverified', 'verified', 'rejected'),
+      defaultValue: 'unverified'
+    },
     role: {
       type: DataTypes.ENUM('admin', 'user'),
       defaultValue: 'user'

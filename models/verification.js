@@ -21,20 +21,20 @@ module.exports = (sequelize, DataTypes) => {
     ktp_image: {
       type: DataTypes.STRING,
       get() {
-        const rawValue = this.getDataValue('image');
+        const rawValue = this.getDataValue('ktp_image');
         return rawValue ? `http://localhost:3000/uploads/${rawValue}` : null;
       }
     },
     sim_image: {
       type: DataTypes.STRING,
       get() {
-        const rawValue = this.getDataValue('image');
+        const rawValue = this.getDataValue('sim_image');
         return rawValue ? `http://localhost:3000/uploads/${rawValue}` : null;
       }
     },
     status: {
       type: DataTypes.ENUM('pending', 'verified', 'rejected'),
-      DefaultValue: 'pending'
+      defaultValue: 'pending'
     }
   }, {
     sequelize,
