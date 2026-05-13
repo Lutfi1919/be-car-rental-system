@@ -13,5 +13,6 @@ router.post(
     verificationController.createVerification
 );
 router.post('/:id', upload.none(), verificationController.updateVerification);
+router.get('/', verificationController.getVerification);
 
 module.exports = router
