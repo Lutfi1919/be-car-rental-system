@@ -57,5 +57,40 @@ module.exports = {
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
+    },
+    changeStatus: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+
+            const schema = {
+                status: { type: "string", enum: ['available', 'on_rent', 'maintenance'] }
+            }
+
+            const data = {
+                status: status
+            }
+
+            const validate = v.validate(data, schema);
+            if (validate.length > 0) {
+                return res.status(400).json(response(400, "Validasi Error", validate))
+            }
+
+            const vehicleUnit = await Vehicle_unit.findByPk(id);
+            if (!vehicleUnit) {
+                return res.status(400).json(response(400, "Validasi Error", "Vehicle unit data not found"))
+            }
+
+            const updateProcess = await Vehicle_unit.update({
+                status: data.status
+            }, {
+                where: {id: id}
+            })
+
+            const newVehicleUnit = await Vehicle_unit.findByPk(id)
+            return res.status(200).json(response(200, "success", newVehicleUnit));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
     }
 }
