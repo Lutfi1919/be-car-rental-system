@@ -2,7 +2,6 @@ const Validator = require("fastest-validator");
 const v = new Validator();
 const { Vehicle, Vehicle_unit } = require('../models')
 const { response } = require('../helpers/response.formatter');
-const { Op } = require('sequelize');
 
 module.exports = {
     createVehicle: async (req, res) => {
@@ -46,7 +45,7 @@ module.exports = {
 
             return res.status(201).json(response(201, 'created', vehicle));
         } catch (error) {
-            return res.status(500).json(response(500, "Server Error", error.messsage))
+            return res.status(500).json(response(500, "Server Error", error.message))
         }
     }
 }

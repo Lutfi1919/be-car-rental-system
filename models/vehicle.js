@@ -18,16 +18,16 @@ module.exports = (sequelize, DataTypes) => {
   Vehicle.init({
     name: DataTypes.STRING,
     type: {
-      type: DataTypes.ENUM('Sedan', 'SUV', 'Hatchback', 'Coupe', 'Sport'),
+      type: DataTypes.ENUM('sedan', 'SUV', 'hatchback', 'coupe', 'sport'),
     },
     transmission: {
-      type: DataTypes.ENUM('Manual', 'Automatic')
+      type: DataTypes.ENUM('manual', 'automatic')
     },
     stock: DataTypes.INTEGER,
     price_per_day: DataTypes.INTEGER,
     description: DataTypes.STRING,
     status: {
-      type: DataTypes.ENUM('Available', 'Unavailable')
+      type: DataTypes.ENUM('available', 'unavailable')
     }
   }, {
     sequelize,
