@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Vehicle, Vehicle_unit } = require('../models')
+const { Vehicle } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -41,18 +41,18 @@ module.exports = {
                 status: 'unavailable'
             })
             
-            const { count } = await Vehicle_unit.findAndCountAll({
-                where: {
-                    vehicle_id: vehicle_id
-                }
-            })
+            // const { count } = await Vehicle_unit.findAndCountAll({
+            //     where: {
+            //         vehicle_id: vehicle_id
+            //     }
+            // })
 
-            await Vehicle.update({
-                stock: count,
-                status: count > 0 ? 'available' : 'unavailable'
-            }, {
-                where: { id: vehicle_id }
-            })
+            // await Vehicle.update({
+            //     stock: count,
+            //     status: count > 0 ? 'available' : 'unavailable'
+            // }, {
+            //     where: { id: vehicle_id }
+            // })
 
             return res.status(201).json(response(201, 'created', vehicle));
         } catch (error) {

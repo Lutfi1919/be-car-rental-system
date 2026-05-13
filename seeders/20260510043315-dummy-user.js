@@ -10,6 +10,7 @@ module.exports = {
         email: 'admin@gmail.com',
         password: passwordHash.generate('admin123'),
         phoneNum: '087875221858',
+        is_verified: 'verified',
         role: 'admin',
         createdAt: new Date(),
         updatedAt: new Date(),
