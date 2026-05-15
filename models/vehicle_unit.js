@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       Vehicle_unit.belongsTo(models.Vehicle, {
         foreignKey: "vehicle_id"
       })
-      Vehicle_unit.hasMany(models.Booking_items, {
-        foreignKey: "vehicle_unit_id"
-      })
+      // Vehicle_unit.hasMany(models.Booking_items, {
+      //   foreignKey: "vehicle_unit_id"
+      // })
     }
   }
   Vehicle_unit.init({
