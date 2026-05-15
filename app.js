@@ -9,6 +9,7 @@ const userRoutes = require('./routes/user.routes')
 const verificationRoutes = require('./routes/verification.routes')
 const vehicleRoutes = require('./routes/vehicle.routes')
 const vehicleUnitRoutes = require('./routes/vehicle_unit.routes')
+const bookingRoutes = require('./routes/booking.routes')
 
 db.sequelize.authenticate()
 .then(() => console.log("Database (model) terkoneksi"))
@@ -21,6 +22,7 @@ app.use('/users', userRoutes);
 app.use('/verification', verificationRoutes);
 app.use('/vehicles', vehicleRoutes);
 app.use('/vehicle_unit', vehicleUnitRoutes);
+app.use('/booking', bookingRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
