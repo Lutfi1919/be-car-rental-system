@@ -6,5 +6,6 @@ const upload = require('../middlewares/upload')
 
 router.post('/', upload.none(), bookingController.createBooking)
 router.get('/', bookingController.getBooking)
+router.post('/:id', upload.none(), bookingController.changeStatus)
 
 module.exports = router

@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Booking, Booking_item } = require('../models')
+const { Booking, Booking_item, Vehicle_unit } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -40,6 +40,60 @@ module.exports = {
 
             return res.status(200).json(response(200, "Success get all bookings data", bookings));
             
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
+    changeStatus: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+
+            const schema = {
+                status: { type: "string", enum: ['completed', 'canceled'] }
+            }
+
+            const data = {
+                status: status
+            }
+
+            const validate = v.validate(data, schema)
+            if (validate.length > 0) {
+                return res.status(400).json(response(400, "Validasi Error", validate))
+            }
+            
+            const booking = await Booking.findByPk(id);
+            if (!booking) {
+                return res.status(400).json(response(400, "Data booking not found, please check [booking_id] value"));
+            }
+
+            await booking.update({
+                status: data.status
+            });
+
+            if (status === 'canceled') {
+                const bookingItems = await Booking_item.findAll({
+                    where: {
+                        booking_id: id
+                    }
+                })
+
+                const vehicleUnitsId = bookingItems.map(item => {
+                    return item.vehicle_unit_id
+                })
+
+                await Vehicle_unit.update(
+                    { status: 'available' },
+                    { where: { id: vehicleUnitsId } }
+                )
+            }
+
+            const newBooking = await Booking.findByPk(id, {
+                include: { model: Booking_item }
+            })
+
+            return res.status(200).json(response(200, "Success change booking status", newBooking));
+
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
