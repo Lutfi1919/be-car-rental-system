@@ -2,24 +2,25 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Verifications', {
+    await queryInterface.createTable('Payments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.BIGINT
       },
-      user_id: {
+      booking_id: {
         type: Sequelize.BIGINT
       },
-      ktp_image: {
-        type: Sequelize.STRING
-      },
-      sim_image: {
-        type: Sequelize.STRING
+      amount: {
+        type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.ENUM('pending', 'verified', 'rejected'),
+        type: Sequelize.ENUM('pending', 'paid'),
+        defaultValue: 'pending'
+      },
+      paid_at: {
+        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,
@@ -31,12 +32,12 @@ module.exports = {
       }
     });
 
-    await queryInterface.addConstraint("Verifications", {
-      fields: ['user_id'],
+    await queryInterface.addConstraint("Payments", {
+      fields: ['booking_id'],
       type: 'foreign key',
-      name: "fk_verifications_user_id",
+      name: "fk_payments_booking_id",
       references: {
-        table: "Users",
+        table: "Bookings",
         field: 'id'
       },
       onDelete: 'CASCADE',
@@ -44,6 +45,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Verifications');
+    await queryInterface.dropTable('Payments');
   }
 };

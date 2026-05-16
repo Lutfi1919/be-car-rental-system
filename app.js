@@ -11,6 +11,7 @@ const vehicleRoutes = require('./routes/vehicle.routes')
 const vehicleUnitRoutes = require('./routes/vehicle_unit.routes')
 const bookingRoutes = require('./routes/booking.routes')
 const bookingItemRoutes = require('./routes/booking_item.routes')
+const paymentRoutes = require('./routes/payment.routes')
 
 db.sequelize.authenticate()
 .then(() => console.log("Database (model) terkoneksi"))
@@ -18,6 +19,7 @@ db.sequelize.authenticate()
 
 app.use(express.json());
 app.use(methodOverride("_method"));
+app.use('/uploads', express.static('uploads'));
 app.use('/', loginRoutes);
 app.use('/users', userRoutes);
 app.use('/verification', verificationRoutes);
@@ -25,6 +27,7 @@ app.use('/vehicles', vehicleRoutes);
 app.use('/vehicle_unit', vehicleUnitRoutes);
 app.use('/booking', bookingRoutes);
 app.use('/booking_item', bookingItemRoutes);
+app.use('/payment', paymentRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

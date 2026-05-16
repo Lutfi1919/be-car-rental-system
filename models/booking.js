@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       Booking.hasMany(models.Booking_item, {
         foreignKey: "booking_id"
       })
+
+      Booking.hasOne(models.Payment, {
+        foreignKey: "booking_id"
+      })
     }
   }
   Booking.init({
