@@ -21,6 +21,10 @@ module.exports = {
       phoneNum: {
         type: Sequelize.STRING
       },
+      profile_image: {
+        type: Sequelize.STRING,
+        defaultValue: '/images/default-pfp.jpg'
+      },
       role: {
         type: Sequelize.ENUM('admin', 'user'),
         defaultValue: 'user'

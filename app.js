@@ -20,6 +20,7 @@ db.sequelize.authenticate()
 app.use(express.json());
 app.use(methodOverride("_method"));
 app.use('/uploads', express.static('uploads'));
+app.use(express.static('public'));
 app.use('/', loginRoutes);
 app.use('/users', userRoutes);
 app.use('/verification', verificationRoutes);
