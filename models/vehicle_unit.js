@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "vehicle_id"
       })
 
-      Vehicle_unit.hasOne(models.Vehicle_image, {
+      Vehicle_unit.hasMany(models.Vehicle_image, {
         foreignKey: "vehicle_unit_id"
       })
     }

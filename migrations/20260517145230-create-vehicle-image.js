@@ -25,7 +25,7 @@ module.exports = {
       }
     });
 
-    await queryInterface.addConstraint("Vehicle_units", {
+    await queryInterface.addConstraint("Vehicle_images", {
       fields: ['vehicle_unit_id'],
       type: 'foreign key',
       name: "fk_vehicle_images_vehicle_unit_id",
