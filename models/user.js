@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     phoneNum: DataTypes.STRING,
+    profile_image: DataTypes.STRING,
     is_verified: { 
       type: DataTypes.ENUM('unverified', 'verified', 'rejected'),
       defaultValue: 'unverified'
