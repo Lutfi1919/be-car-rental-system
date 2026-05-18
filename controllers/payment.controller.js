@@ -33,10 +33,6 @@ module.exports = {
                 paid_at: null
             })
 
-            // await Booking.update({
-            //     status: 'paid'
-            // })
-
             return res.status(201).json(response(201, 'created', payment))
 
         } catch (error) {

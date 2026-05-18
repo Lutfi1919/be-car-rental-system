@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Vehicle_unit, Vehicle } = require('../models')
+const { Vehicle_unit, Vehicle, Vehicle_image } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
