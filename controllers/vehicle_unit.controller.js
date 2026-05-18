@@ -50,7 +50,10 @@ module.exports = {
     getVehicleUnit: async (req, res) => {
         try {
             const vehicleUnits = await Vehicle_unit.findAll({
-                include: { model: Vehicle }
+                include: [
+                    { model: Vehicle },
+                    { model: Vehicle_image },
+                ]
             })
 
             return res.status(200).json(response(200, "Success get all vehicle units", vehicleUnits))
