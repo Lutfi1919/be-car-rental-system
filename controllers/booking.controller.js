@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Booking, Booking_item, Vehicle_unit } = require('../models')
+const { Booking, Booking_item, Vehicle_unit, Return } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -35,7 +35,10 @@ module.exports = {
     getBooking: async (req, res) => {
         try {
             const bookings = await Booking.findAll({
-                include: { model: Booking_item }
+                include: [
+                    { model: Booking_item },
+                    { model: Return },
+                ]
             });
 
             return res.status(200).json(response(200, "Success get all bookings data", bookings));
