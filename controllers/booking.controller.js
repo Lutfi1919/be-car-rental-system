@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Booking, Booking_item, Vehicle_unit, Return } = require('../models')
+const { Booking, Booking_item, Vehicle_unit, Return, User } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -21,13 +21,23 @@ module.exports = {
                 return res.status(400).json(response(400, "Validasi Error", validate))
             }
 
-            const booking = await Booking.create({
-                user_id: data.user_id,
-                total_price: 0,
-                status: 'pending'
-            })
+            const user = await User.findByPk(user_id)
+            if (!user) {
+                return res.status(400).json(response(400, "Data user not found, please check [user_id] value"))
+            }
 
-            return res.status(201).json(response(201, 'created', booking));
+            if (user.is_verified == 'verified') {
+                const booking = await Booking.create({
+                    user_id: data.user_id,
+                    total_price: 0,
+                    status: 'pending'
+                })
+
+                return res.status(201).json(response(201, 'created', booking));
+            } else {
+                return res.status(400).json(response(400, "Data user is not verified!"))
+            }
+
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
