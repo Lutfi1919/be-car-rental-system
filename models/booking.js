@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       Booking.belongsTo(models.User, {
         foreignKey: "user_id"
       })
+
+      Booking.belongsTo(models.Booking_package, {
+        foreignKey: "booking_package_id"
+      })
       
       Booking.hasMany(models.Booking_item, {
         foreignKey: "booking_id"
@@ -30,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Booking.init({
     user_id: DataTypes.BIGINT,
+    booking_package_id: DataTypes.BIGINT,
     total_price: DataTypes.INTEGER,
     status: {
       type: DataTypes.ENUM('pending', 'paid', 'completed', 'canceled')

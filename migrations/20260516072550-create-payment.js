@@ -12,6 +12,12 @@ module.exports = {
       booking_id: {
         type: Sequelize.BIGINT
       },
+      method: {
+        type: Sequelize.ENUM('cash', 'online_payment')
+      },
+      payment_type: {
+        type: Sequelize.ENUM('dp', 'full_payment')
+      },
       amount: {
         type: Sequelize.INTEGER
       },

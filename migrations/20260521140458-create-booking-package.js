@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Vehicles', {
+    await queryInterface.createTable('Booking_packages', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,26 +12,14 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      type: {
-        type: Sequelize.ENUM('sedan', 'SUV', 'hatchback', 'coupe', 'sport', 'LCGC')
+      price_multiplier: {
+        type: Sequelize.FLOAT
       },
-      transmission: {
-        type: Sequelize.ENUM('manual', 'automatic')
-      },
-      fuel_type: {
-        type: Sequelize.ENUM('pertalite', 'pertamax', 'pertamax_turbo', 'diesel')
-      },
-      stock: {
-        type: Sequelize.INTEGER
-      },
-      price_per_day: {
-        type: Sequelize.INTEGER
+      can_refund_dp: {
+        type: Sequelize.BOOLEAN
       },
       description: {
         type: Sequelize.STRING
-      },
-      status: {
-        type: Sequelize.ENUM('available', 'unavailable')
       },
       createdAt: {
         allowNull: false,
@@ -44,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Vehicles');
+    await queryInterface.dropTable('Booking_packages');
   }
 };

@@ -12,6 +12,9 @@ module.exports = {
       user_id: {
         type: Sequelize.BIGINT
       },
+      booking_package_id: {
+        type: Sequelize.BIGINT
+      },
       total_price: {
         type: Sequelize.INTEGER
       },
@@ -34,6 +37,18 @@ module.exports = {
       name: "fk_bookings_user_id",
       references: {
         table: "Users",
+        field: 'id'
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
+
+    await queryInterface.addConstraint("Bookings", {
+      fields: ['booking_package_id'],
+      type: 'foreign key',
+      name: "fk_bookings_booking_package_id",
+      references: {
+        table: "Booking_packages",
         field: 'id'
       },
       onDelete: 'CASCADE',
