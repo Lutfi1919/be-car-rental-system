@@ -13,6 +13,7 @@ const vehicleImageRoutes = require('./routes/vehicle_image.routes')
 const bookingRoutes = require('./routes/booking.routes')
 const bookingItemRoutes = require('./routes/booking_item.routes')
 const paymentRoutes = require('./routes/payment.routes')
+const returnRoutes = require('./routes/return.routes')
 
 db.sequelize.authenticate()
 .then(() => console.log("Database (model) terkoneksi"))
@@ -31,6 +32,7 @@ app.use('/vehicle_image', vehicleImageRoutes);
 app.use('/booking', bookingRoutes);
 app.use('/booking_item', bookingItemRoutes);
 app.use('/payment', paymentRoutes);
+app.use('/return', returnRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

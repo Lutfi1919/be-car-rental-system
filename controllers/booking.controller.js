@@ -84,7 +84,7 @@ module.exports = {
                 status: data.status
             });
 
-            if (status === 'canceled') {
+            if (booking.status === 'canceled' || booking.status === 'completed') {
                 const bookingItems = await Booking_item.findAll({
                     where: {
                         booking_id: id

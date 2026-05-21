@@ -81,16 +81,30 @@ module.exports = {
 
             const vehicleUnit = await Vehicle_unit.findByPk(id);
             if (!vehicleUnit) {
-                return res.status(400).json(response(400, "Validasi Error", "Vehicle unit data not found"))
+                return res.status(400).json(response(400, "Validasi Error", "Vehicle unit data not found"));
             }
 
-            const updateProcess = await Vehicle_unit.update({
+            await vehicleUnit.update({
                 status: data.status
-            }, {
-                where: {id: id}
-            })
+            });
 
-            const newVehicleUnit = await Vehicle_unit.findByPk(id)
+            const availableUnit = await Vehicle_unit.findOne({
+                where: {
+                    vehicle_id: vehicleUnit.vehicle_id,
+                    status: 'available'
+                }
+            });
+
+            await Vehicle.update({
+                status: availableUnit ? 'available' : 'unavailable'
+            }, {
+                where: {
+                    id: vehicleUnit.vehicle_id
+                }
+            });
+
+            const newVehicleUnit = await Vehicle_unit.findByPk(id);
+
             return res.status(200).json(response(200, "success", newVehicleUnit));
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
