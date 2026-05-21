@@ -38,6 +38,11 @@ module.exports = {
                 ktp_image: ktp_image.filename,
                 sim_image: sim_image.filename,
             })
+
+            await user.update({
+                is_verified: 'pending'
+            })
+            
             return res.status(201).json(response(201, 'created', verification))
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))

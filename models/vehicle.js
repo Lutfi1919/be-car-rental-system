@@ -20,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     type: {
       type: DataTypes.ENUM('sedan', 'SUV', 'hatchback', 'coupe', 'sport'),
     },
+    fuel_type: {
+      type: DataTypes.ENUM('pertalite', 'pertamax', 'pertamax_turbo', 'diesel'),
+    },
     transmission: {
       type: DataTypes.ENUM('manual', 'automatic')
     },

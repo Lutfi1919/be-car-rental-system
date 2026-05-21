@@ -6,11 +6,12 @@ const { response } = require('../helpers/response.formatter');
 module.exports = {
     createVehicle: async (req, res) => {
         try {
-            const { name, type, transmission, price_per_day, description } = req.body;
+            const { name, type, fuel_type, transmission, price_per_day, description } = req.body;
 
             const schema = {
                 name: { type: "string", min: 3 },
                 type: { type: "string", enum: ['sedan', 'SUV', 'hatchback', 'coupe', 'sport'] },
+                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
                 transmission: { type: "string", enum: ['manual', 'automatic'] },
                 // stock: { type: "number", positive: true, integer: true },
                 price_per_day: { type: "number", positive: true, integer: true },
@@ -20,6 +21,7 @@ module.exports = {
             const data = {
                 name: name,
                 type: type,
+                fuel_type: fuel_type,
                 transmission: transmission,
                 // stock: Number(stock),
                 price_per_day: Number(price_per_day),
@@ -34,6 +36,7 @@ module.exports = {
             const vehicle = await Vehicle.create({
                 name: data.name,
                 type: data.type,
+                fuel_type: data.fuel_type,
                 transmission: data.transmission,
                 stock: 0,
                 price_per_day: data.price_per_day,
