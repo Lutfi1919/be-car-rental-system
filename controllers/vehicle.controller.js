@@ -13,7 +13,6 @@ module.exports = {
                 type: { type: "string", enum: ['sedan', 'SUV', 'hatchback', 'coupe', 'sport'] },
                 fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
                 transmission: { type: "string", enum: ['manual', 'automatic'] },
-                // stock: { type: "number", positive: true, integer: true },
                 price_per_day: { type: "number", positive: true, integer: true },
                 description: { type: "string" },
             }
@@ -23,7 +22,6 @@ module.exports = {
                 type: type,
                 fuel_type: fuel_type,
                 transmission: transmission,
-                // stock: Number(stock),
                 price_per_day: Number(price_per_day),
                 description: description,
             }
@@ -49,23 +47,11 @@ module.exports = {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
     },
-    getVehicle: async (req, res) => {
-        try {
-            const vehicles = await Vehicle.findAll({
-                include: { model: Vehicle_unit }
-            });
-
-            return res.status(200).json(response(200, "Success get all vehicles", vehicles));
-        } catch (error) {
-            return res.status(500).json(response(500, "Server Error", error.message))
-        }
-    },
     updateVehicle: async (req, res) => {
         try {
             const { id } = req.params;
             const { name, type, fuel_type, transmission, price_per_day, description } = req.body;
-
-            
+ 
             const vehicle = await Vehicle.findByPk(id);
             if (!vehicle) {
                 return res.status(400).json(response(400, "Validasi Error", "Data vehicle not found!"))
@@ -120,5 +106,16 @@ module.exports = {
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
-    }
+    },
+    getVehicle: async (req, res) => {
+        try {
+            const vehicles = await Vehicle.findAll({
+                include: { model: Vehicle_unit }
+            });
+
+            return res.status(200).json(response(200, "Success get all vehicles", vehicles));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
 }
