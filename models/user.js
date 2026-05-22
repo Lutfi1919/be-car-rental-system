@@ -25,7 +25,13 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     phoneNum: DataTypes.STRING,
-    profile_image: DataTypes.STRING,
+    profile_image: {
+      type: DataTypes.STRING,
+      get() {
+        const rawValue = this.getDataValue('profile_image');
+        return rawValue ? `http://localhost:4000/uploads/${rawValue}` : null;
+      }
+    },
     is_verified: { 
       type: DataTypes.ENUM('unverified', 'verified', 'rejected'),
       defaultValue: 'unverified'
