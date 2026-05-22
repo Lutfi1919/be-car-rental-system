@@ -37,7 +37,7 @@ module.exports = {
                 return res.status(400).json(response(400, "Data vehicle unit not found, please check [vehicle_unit_id] value"));
             }
             if (vehicleUnit.status !== 'available') {
-                return res.status(400).json(response(400, "Vehicle is not available"))
+                return res.status(400).json(response(400, "Vehicle unit is not available"))
             }
 
             const pricePerDay = vehicleUnit.Vehicle.price_per_day;

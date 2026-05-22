@@ -109,5 +109,13 @@ module.exports = {
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
-    }
+    },
+    // updateVehicleUnit: async (req, res) => {
+    //     try {
+    //         const { id } = req.params;
+    //         const
+    //     } catch (error) {
+    //         return res.status(500).json(response(500, "Server Error", error.message))
+    //     }
+    // }
 }

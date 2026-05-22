@@ -59,5 +59,66 @@ module.exports = {
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
+    },
+    updateVehicle: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { name, type, fuel_type, transmission, price_per_day, description } = req.body;
+
+            
+            const vehicle = await Vehicle.findByPk(id);
+            if (!vehicle) {
+                return res.status(400).json(response(400, "Validasi Error", "Data vehicle not found!"))
+            }
+            
+            const data = {
+                name: name?.trim() ? name : vehicle.name,
+                type: type?.trim() ? type : vehicle.type,
+                fuel_type: fuel_type?.trim() ? fuel_type : vehicle.fuel_type,
+                transmission: transmission?.trim() ? transmission : vehicle.transmission,
+                price_per_day: price_per_day ? Number(price_per_day) : vehicle.price_per_day,
+                description: description?.trim() ? description : vehicle.description,
+            }
+            
+            const schema = {
+                name: { type: "string", min: 3 },
+                type: { type: "string", enum: ['sedan', 'SUV', 'hatchback', 'coupe', 'sport'] },
+                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
+                transmission: { type: "string", enum: ['manual', 'automatic'] },
+                price_per_day: { type: "number", positive: true, integer: true },
+                description: { type: "string" },
+            }
+
+            const validate = v.validate(data, schema);
+            if (validate.length > 0) {
+                return res.status(400).json(response(400, "Validasi Error", validate))
+            }
+
+            await vehicle.update(data);
+
+            const newVehicle = await Vehicle.findByPk(id);
+
+            return res.status(200).json(response(200, "Success update vehicle", newVehicle));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
+    deleteVehicle: async (req, res) => {
+        try {
+            const { id } = req.params;
+            
+            const vehicle = await Vehicle.findByPk(id);
+            if (!vehicle) {
+                return res.status(400).json(response(400, "Validasi Error", "Data Vehicle not found!"))
+            }
+
+            const deleteProcess = await Vehicle.destroy({
+                where: { id, id }
+            })
+
+            return res.status(200).json(response(200, "deleted"));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
     }
 }
