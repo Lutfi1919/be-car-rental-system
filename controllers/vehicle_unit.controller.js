@@ -3,6 +3,7 @@ const v = new Validator();
 const { Vehicle_unit, Vehicle, Vehicle_image } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
+// CERUD vehicle_unit : done
 module.exports = {
     createVehicleUnit: async (req, res) => {
         try {
@@ -41,22 +42,46 @@ module.exports = {
             }, {
                 where: { id: vehicle_id }
             })
-
+            
             return res.status(201).json(response(201, 'created', vehicleUnit));
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
     },
-    getVehicleUnit: async (req, res) => {
+    updateVehicleUnit: async (req, res) => {
         try {
-            const vehicleUnits = await Vehicle_unit.findAll({
-                include: [
-                    { model: Vehicle },
-                    { model: Vehicle_image },
-                ]
-            })
+            const { id } = req.params;
+            const { vehicle_id, plate_number } = req.body;
+            
+            const vehicleUnit = await Vehicle_unit.findByPk(id)
+            if (!vehicleUnit) {
+                return res.status(400).json(response(400, "Validasi Error", "Data vehicle unit not found!"))
+            }
 
-            return res.status(200).json(response(200, "Success get all vehicle units", vehicleUnits))
+            const vehicle = await Vehicle.findByPk(vehicle_id)
+            if (!vehicle) {
+                return res.status(400).json(response(400, "Validasi Error", "Data vehicle not found!"))
+            }
+
+            const data = {
+                vehicle_id: vehicle_id ? Number(vehicle_id) : vehicleUnit.vehicle_id,
+                plate_number: plate_number?.trim() ? plate_number : vehicleUnit.plate_number
+            }
+
+            const schema = {
+                vehicle_id: { type: "number", positive: true, integer: true },
+                plate_number: { type: "string", min: 3 },
+            }
+
+            const validate = v.validate(data, schema);
+            if (validate.length > 0) {
+                return res.status(400).json(response(400, "Validasi Error", validate))
+            }
+
+            await vehicleUnit.update(data)
+            
+            const newVehicleUnit = await Vehicle_unit.findByPk(id);
+            return res.status(200).json(response(200, "Success update vehicle", newVehicleUnit));
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
@@ -110,12 +135,36 @@ module.exports = {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
     },
-    // updateVehicleUnit: async (req, res) => {
-    //     try {
-    //         const { id } = req.params;
-    //         const
-    //     } catch (error) {
-    //         return res.status(500).json(response(500, "Server Error", error.message))
-    //     }
-    // }
+    deleteVehicleUnit: async (req, res) => {
+        try {
+            const { id } = req.params;
+            
+            const vehicleUnit = await Vehicle_unit.findByPk(id);
+            if (!vehicleUnit) {
+                return res.status(400).json(response(400, "Validasi Errpr", "Data vehicle unit not found!"))
+            }
+
+            await vehicleUnit.destroy({
+                where: { id, id }
+            })
+
+            return res.status(200).json(response(200, "deleted"));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
+    getVehicleUnit: async (req, res) => {
+        try {
+            const vehicleUnits = await Vehicle_unit.findAll({
+                include: [
+                    { model: Vehicle },
+                    { model: Vehicle_image },
+                ]
+            })
+
+            return res.status(200).json(response(200, "Success get all vehicle units", vehicleUnits))
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
 }

@@ -3,6 +3,7 @@ const v = new Validator();
 const { Vehicle, Vehicle_unit } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
+// CERUD vehicle: done
 module.exports = {
     createVehicle: async (req, res) => {
         try {

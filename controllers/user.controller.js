@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
 
-// CRUD user : done
+// CERUD user : done
 // Create nya ada di register
 
 module.exports = {
