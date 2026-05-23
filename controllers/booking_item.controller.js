@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Booking_item, Booking, Vehicle, Vehicle_unit } = require('../models')
+const { Booking_item, Booking, Booking_package, Vehicle, Vehicle_unit } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -27,7 +27,9 @@ module.exports = {
                 return res.status(400).json(response(400, "Validasi Error", validate));
             }
 
-            const booking = await Booking.findByPk(booking_id)
+            const booking = await Booking.findByPk(booking_id, {
+                include: { model: Booking_package }
+            })
             if (!booking) {
                 return res.status(400).json(response(400, "Data booking not found, please check [booking_id] value"));
             }
@@ -49,7 +51,8 @@ module.exports = {
                 return res.status(400).json(response(400, "End date must be greater than start date"))
             }
 
-            const subtotal = pricePerDay * totalDays; 
+            const subtotal = pricePerDay * totalDays;
+            const packagePrice = booking.Booking_package.price_multiplier
 
             const bookingItem = await Booking_item.create({
                 booking_id: data.booking_id,
@@ -57,7 +60,7 @@ module.exports = {
                 price_per_day: pricePerDay,
                 start_date: data.start_date,
                 end_date: data.end_date,
-                subtotal: subtotal, 
+                subtotal: subtotal * packagePrice, 
             })
 
             await vehicleUnit.update({
@@ -97,4 +100,53 @@ module.exports = {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
     },
+    deleteBookingItem: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const bookingItem = await Booking_item.findByPk(id);
+            if (!bookingItem) {
+                return res.status(400).json(response(400, "Booking item not found!"))
+            }
+
+            const booking = await Booking.findByPk(bookingItem.booking_id);
+            if (!booking) {
+                return res.status(400).json(response(400, "Booking not found!"))
+            }
+            
+            const vehicleUnit = await Vehicle_unit.findByPk(bookingItem.vehicle_unit_id);
+
+            await bookingItem.destroy();
+            if (vehicleUnit) {
+                await vehicleUnit.update({
+                    status: 'available'
+                });
+            }
+
+            const allBookingItems = await Booking_item.findAll({
+                where: {
+                    booking_id: booking.id
+                }
+            })
+
+            const totalPrice = allBookingItems.reduce((acc, item) => {
+                return acc + item.subtotal;
+            }, 0);
+
+            await booking.update({
+                total_price: totalPrice
+            });
+
+            if (allBookingItems.length === 0) {
+                await booking.update({
+                    status: 'canceled'
+                });
+            }
+
+            return res.status(200).json(response(200, "Success delete booking item!"));
+
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    }
 }
