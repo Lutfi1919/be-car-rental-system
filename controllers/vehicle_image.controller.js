@@ -2,7 +2,10 @@ const Validator = require("fastest-validator");
 const v = new Validator();
 const { Vehicle_image, Vehicle_unit, sequelize } = require('../models')
 const { response } = require('../helpers/response.formatter');
+const fs = require('fs');
+const path = require('path');
 
+// CERUD vehicle_image : done
 module.exports = {
     createVehicleImage: async (req, res) => {
         const t = await sequelize.transaction()
@@ -52,5 +55,60 @@ module.exports = {
             await t.rollback();
             return res.status(500).json(response(500, "Server Error", error.message))
         }
-    }
+    },
+    updateVehicleImage: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { vehicle_image } = req.file;
+
+            const vehicleImage = await Vehicle_image.findByPk(id);
+            if (!vehicleImage) {
+                return res.status(400).json(response(400, "Validasi Error", "Vehicle image not found!"))
+            }
+
+            if (req.file) {
+                const imageName = vehicleImage.getDataValue('vehicle_images');
+                const filePath = path.join(__dirname, '../uploads', imageName);
+
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+
+            const updateProcess = await Vehicle_image.update({
+                vehicle_images: (req.file ? req.file.filename : vehicleImage.getDataValue("vehicle_images"))
+            }, {
+                where: { id: id }
+            })
+            
+            const newVehicleImage = await Vehicle_image.findByPk(id);
+            return res.status(200).json(response(200, "success", newVehicleImage));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
+    deleteVehicleImage: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const vehicleImage = await Vehicle_image.findByPk(id);
+            if (!vehicleImage) {
+                return res.status(400).json(response(400, "Validasi Error", "Vehicle image not found!"))
+            }
+            const imageName = vehicleImage.getDataValue('vehicle_images');
+            const filePath = path.join(__dirname, '../uploads', imageName);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+
+            await Vehicle_image.destroy({
+                where: { id, id }
+            });
+
+            return res.status(200).json(response(200, "Success delete vehicle image!"));
+
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
 }

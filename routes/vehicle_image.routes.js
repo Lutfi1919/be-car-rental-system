@@ -11,7 +11,7 @@ router.post(
     ]), 
     vehicleImageController.createVehicleImage
 );
-// router.post('/:id', upload.none(), vehicleImageController.updateVerification);
-// router.get('/', vehicleImageController.getVerification);
+router.patch('/:id', upload.single('vehicle_images'), vehicleImageController.updateVehicleImage);
+router.delete('/:id', vehicleImageController.deleteVehicleImage);
 
 module.exports = router

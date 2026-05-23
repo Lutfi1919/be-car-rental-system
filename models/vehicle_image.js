@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       get() {
         const rawValue = this.getDataValue('vehicle_images');
-        return rawValue ? `http://localhost:3000/uploads/${rawValue}` : null;
+        return rawValue ? `http://localhost:4000/uploads/${rawValue}` : null;
       }
     }
   }, {
