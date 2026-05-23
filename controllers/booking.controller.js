@@ -1,34 +1,42 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Booking, Booking_item, Vehicle_unit, Return, User } = require('../models')
+const { Booking, Booking_item, Booking_package, Vehicle_unit, Return, User } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
     createBooking: async (req, res) => {
         try {
-            const { user_id } = req.body;
-
+            const { user_id, booking_package_id } = req.body;
+            
             const schema = {
-                user_id: { type: "number", positive: true, integer: true }
+                user_id: { type: "number", positive: true, integer: true },
+                booking_package_id: { type: "number", positive: true, integer: true }
             }
-
+            
             const data = {
                 user_id: Number(user_id),
+                booking_package_id: Number(booking_package_id),
             }
-
+            
             const validate = v.validate(data, schema)
             if (validate.length > 0) {
                 return res.status(400).json(response(400, "Validasi Error", validate))
             }
-
+            
             const user = await User.findByPk(user_id)
             if (!user) {
-                return res.status(400).json(response(400, "Data user not found, please check [user_id] value"))
+                return res.status(400).json(response(400, "Data user not found, please check [user_id] value!"))
+            }
+            
+            const package = await Booking_package.findByPk(booking_package_id);
+            if (!package) {
+                return res.status(400).json(response(400, "Booking package not found, please check [booking_package_id] value!"))
             }
 
             if (user.is_verified == 'verified') {
                 const booking = await Booking.create({
                     user_id: data.user_id,
+                    booking_package_id: data.booking_package_id,
                     total_price: 0,
                     status: 'pending'
                 })

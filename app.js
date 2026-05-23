@@ -10,6 +10,7 @@ const verificationRoutes = require('./routes/verification.routes')
 const vehicleRoutes = require('./routes/vehicle.routes')
 const vehicleUnitRoutes = require('./routes/vehicle_unit.routes')
 const vehicleImageRoutes = require('./routes/vehicle_image.routes')
+const bookingPackageRoutes = require('./routes/booking_package.routes')
 const bookingRoutes = require('./routes/booking.routes')
 const bookingItemRoutes = require('./routes/booking_item.routes')
 const paymentRoutes = require('./routes/payment.routes')
@@ -29,6 +30,7 @@ app.use('/verification', verificationRoutes);
 app.use('/vehicles', vehicleRoutes);
 app.use('/vehicle_unit', vehicleUnitRoutes);
 app.use('/vehicle_image', vehicleImageRoutes);
+app.use('/booking_package', bookingPackageRoutes);
 app.use('/booking', bookingRoutes);
 app.use('/booking_item', bookingItemRoutes);
 app.use('/payment', paymentRoutes);
