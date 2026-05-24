@@ -105,5 +105,34 @@ module.exports = {
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
+    },
+    deleteVerification: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const verification = await Verification.findByPk(id);
+            if (!verification) {
+                return res.status(400).json(response(400, "Validasi Error", "Data verification not found!"))
+            }
+
+            const ktpImage = verification.getDataValue('ktp_image');
+            const ktpFilePath = path.join(__dirname, '../uploads', ktpImage);
+            if (fs.existsSync(ktpFilePath)) {
+                fs.unlinkSync(ktpFilePath);
+            }
+            const simImage = verification.getDataValue('sim_image');
+            const simFilePath = path.join(__dirname, '../uploads', simImage);
+            if (fs.existsSync(simFilePath)) {
+                fs.unlinkSync(simFilePath);
+            }
+            
+            const deteleProcess = await Verification.destroy({
+                where: {id, id}
+            });
+
+            return res.status(200).json(response(200, "deleted"));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
     }
 }
