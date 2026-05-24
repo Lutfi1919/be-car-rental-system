@@ -4,6 +4,7 @@ const port = 4000
 
 const db = require('./models')
 const methodOverride = require('method-override')
+const { checkToken } = require('./middlewares/auth')
 const loginRoutes = require('./routes/login.routes')
 const userRoutes = require('./routes/user.routes')
 const verificationRoutes = require('./routes/verification.routes')
@@ -25,16 +26,16 @@ app.use(methodOverride("_method"));
 app.use('/uploads', express.static('uploads'));
 app.use(express.static('public'));
 app.use('/', loginRoutes);
-app.use('/users', userRoutes);
-app.use('/verification', verificationRoutes);
-app.use('/vehicles', vehicleRoutes);
-app.use('/vehicle_unit', vehicleUnitRoutes);
-app.use('/vehicle_image', vehicleImageRoutes);
-app.use('/booking_package', bookingPackageRoutes);
-app.use('/booking', bookingRoutes);
-app.use('/booking_item', bookingItemRoutes);
-app.use('/payment', paymentRoutes);
-app.use('/return', returnRoutes);
+app.use('/users', checkToken, userRoutes);
+app.use('/verification', checkToken, verificationRoutes);
+app.use('/vehicles', checkToken, vehicleRoutes);
+app.use('/vehicle_unit', checkToken, vehicleUnitRoutes);
+app.use('/vehicle_image', checkToken, vehicleImageRoutes);
+app.use('/booking_package', checkToken, bookingPackageRoutes);
+app.use('/booking', checkToken, bookingRoutes);
+app.use('/booking_item', checkToken, bookingItemRoutes);
+app.use('/payments', checkToken, paymentRoutes);
+app.use('/return', checkToken, returnRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
