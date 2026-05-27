@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "booking_id"
       })
 
-      Booking.hasOne(models.Payment, {
+      Booking.hasMany(models.Payment, {
         foreignKey: "booking_id"
       })
 
@@ -36,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.BIGINT,
     booking_package_id: DataTypes.BIGINT,
     total_price: DataTypes.INTEGER,
-    status: {
-      type: DataTypes.ENUM('pending', 'paid', 'completed', 'canceled')
-    }
+    remaining_payment: DataTypes.INTEGER,
+    payment_status: DataTypes.ENUM('unpaid', 'dp_paid', 'paid'),
+    status: DataTypes.ENUM('pending', 'paid', 'completed', 'canceled')
   }, {
     sequelize,
     modelName: 'Booking',

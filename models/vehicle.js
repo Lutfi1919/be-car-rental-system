@@ -10,28 +10,34 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Vehicle.hasMany(models.Vehicle_unit, {
-        foreignKey: "vehicle_id"
-      })
+
     }
   }
   Vehicle.init({
     name: DataTypes.STRING,
     type: {
-      type: DataTypes.ENUM('sedan', 'SUV', 'hatchback', 'coupe', 'sport'),
-    },
-    fuel_type: {
-      type: DataTypes.ENUM('pertalite', 'pertamax', 'pertamax_turbo', 'diesel'),
+      type: DataTypes.ENUM('sedan', 'hatchback', 'coupe', 'sport', 'LCGC', 'SUV', 'MPV'),
     },
     transmission: {
       type: DataTypes.ENUM('manual', 'automatic')
     },
-    stock: DataTypes.INTEGER,
+    passengers: DataTypes.INTEGER,
+    fuel_type: {
+      type: DataTypes.ENUM('pertalite', 'pertamax', 'pertamax_turbo', 'diesel'),
+    },
     price_per_day: DataTypes.INTEGER,
     description: DataTypes.STRING,
+    plate_number: DataTypes.STRING,
+    image: {
+      type: DataTypes.STRING,
+      get() {
+        const rawValue = this.getDataValue('image');
+        return rawValue ? `http://localhost:4000/uploads/${rawValue}` : null;
+      }
+    },
     status: {
-      type: DataTypes.ENUM('available', 'unavailable')
-    }
+      type: DataTypes.ENUM('available', 'on_rent', 'maintenance')
+    },
   }, {
     sequelize,
     modelName: 'Vehicle',
