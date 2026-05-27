@@ -29,6 +29,10 @@ module.exports = {
         type: Sequelize.ENUM('admin', 'user'),
         defaultValue: 'user'
       },
+      is_verified: {
+        type: Sequelize.ENUM('unverified', 'pending', 'verified', 'rejected'),
+        defaultValue: 'unverified'
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -13,16 +13,16 @@ module.exports = {
         type: Sequelize.STRING
       },
       type: {
-        type: Sequelize.ENUM('sedan', 'SUV', 'hatchback', 'coupe', 'sport', 'LCGC')
+        type: Sequelize.ENUM('sedan', 'hatchback', 'coupe', 'sport', 'LCGC', 'SUV', 'MPV')
       },
       transmission: {
         type: Sequelize.ENUM('manual', 'automatic')
       },
+      passengers: {
+        type: Sequelize.INTEGER
+      },
       fuel_type: {
         type: Sequelize.ENUM('pertalite', 'pertamax', 'pertamax_turbo', 'diesel')
-      },
-      stock: {
-        type: Sequelize.INTEGER
       },
       price_per_day: {
         type: Sequelize.INTEGER
@@ -30,8 +30,14 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
+      plate_number: {
+        type: Sequelize.STRING
+      },
+      image: {
+        type: Sequelize.STRING
+      },
       status: {
-        type: Sequelize.ENUM('available', 'unavailable')
+        type: Sequelize.ENUM('available', 'on_rent', 'maintenance')
       },
       createdAt: {
         allowNull: false,

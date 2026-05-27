@@ -16,13 +16,13 @@ module.exports = {
         type: Sequelize.ENUM('cash', 'online_payment')
       },
       payment_type: {
-        type: Sequelize.ENUM('dp', 'full_payment')
+        type: Sequelize.ENUM('dp', 'settlement', 'full_payment', 'refund')
       },
       amount: {
         type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.ENUM('pending', 'paid'),
+        type: Sequelize.ENUM('pending', 'paid', 'failed'),
         defaultValue: 'pending'
       },
       paid_at: {

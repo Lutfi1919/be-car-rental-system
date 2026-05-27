@@ -18,8 +18,14 @@ module.exports = {
       total_price: {
         type: Sequelize.INTEGER
       },
+      remaining_payment: {
+        type: Sequelize.INTEGER
+      },
+      payment_status: {
+        type: Sequelize.ENUM('unpaid', 'dp_paid', 'paid')
+      },
       status: {
-        type: Sequelize.ENUM('pending', 'paid', 'completed', 'canceled')
+        type: Sequelize.ENUM('pending', 'confirmed', 'on_rent', 'completed', 'canceled')
       },
       createdAt: {
         allowNull: false,

@@ -12,7 +12,7 @@ module.exports = {
       booking_id: {
         type: Sequelize.BIGINT
       },
-      vehicle_unit_id: {
+      vehicle_id: {
         type: Sequelize.BIGINT
       },
       price_per_day: {
@@ -50,11 +50,11 @@ module.exports = {
     });
     
     await queryInterface.addConstraint("Booking_items", {
-      fields: ['vehicle_unit_id'],
+      fields: ['vehicle_id'],
       type: 'foreign key',
-      name: "fk_booking_items_vehicle_unit_id",
+      name: "fk_booking_items_vehicle_id",
       references: {
-        table: "Vehicle_units",
+        table: "Vehicles",
         field: 'id'
       },
       onDelete: 'CASCADE',
