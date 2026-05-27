@@ -1,30 +1,35 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Vehicle, Vehicle_unit } = require('../models')
+const { Vehicle } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 // CERUD vehicle: done
 module.exports = {
     createVehicle: async (req, res) => {
         try {
-            const { name, type, fuel_type, transmission, price_per_day, description } = req.body;
+            const { name, type, transmission, passengers, fuel_type, price_per_day, description, plate_number } = req.body;
+            const { image } = req.file;
 
             const schema = {
                 name: { type: "string", min: 3 },
-                type: { type: "string", enum: ['sedan', 'SUV', 'hatchback', 'coupe', 'sport'] },
-                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
+                type: { type: "string", enum: ['sedan', 'hatchback', 'coupe', 'sport', 'LCGC', 'SUV', 'MPV'] },
                 transmission: { type: "string", enum: ['manual', 'automatic'] },
+                passengers: { type: "number", positive: true, integer: true },
+                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
                 price_per_day: { type: "number", positive: true, integer: true },
                 description: { type: "string" },
+                plate_number: { type: "string", min: 3 },
             }
 
             const data = {
                 name: name,
                 type: type,
-                fuel_type: fuel_type,
                 transmission: transmission,
+                passengers: Number(passengers),
+                fuel_type: fuel_type,
                 price_per_day: Number(price_per_day),
                 description: description,
+                plate_number: plate_number,
             }
 
             const validate = v.validate(data, schema);
@@ -35,12 +40,14 @@ module.exports = {
             const vehicle = await Vehicle.create({
                 name: data.name,
                 type: data.type,
-                fuel_type: data.fuel_type,
                 transmission: data.transmission,
-                stock: 0,
+                passengers: data.passengers,
+                fuel_type: data.fuel_type,
                 price_per_day: data.price_per_day,
                 description: data.description,
-                status: 'unavailable'
+                plate_number: data.plate_number,
+                image: req.file.filename,
+                status: 'available'
             })
             
             return res.status(201).json(response(201, 'created', vehicle));
@@ -51,7 +58,7 @@ module.exports = {
     updateVehicle: async (req, res) => {
         try {
             const { id } = req.params;
-            const { name, type, fuel_type, transmission, price_per_day, description } = req.body;
+            const { name, type, transmission, passengers, fuel_type, price_per_day, description, plate_number } = req.body;
  
             const vehicle = await Vehicle.findByPk(id);
             if (!vehicle) {
@@ -61,19 +68,23 @@ module.exports = {
             const data = {
                 name: name?.trim() ? name : vehicle.name,
                 type: type?.trim() ? type : vehicle.type,
-                fuel_type: fuel_type?.trim() ? fuel_type : vehicle.fuel_type,
                 transmission: transmission?.trim() ? transmission : vehicle.transmission,
+                passengers: passengers ? Number(passengers) : vehicle.passengers,
+                fuel_type: fuel_type?.trim() ? fuel_type : vehicle.fuel_type,
                 price_per_day: price_per_day ? Number(price_per_day) : vehicle.price_per_day,
                 description: description?.trim() ? description : vehicle.description,
+                plate_number: plate_number ? Number(plate_number) : vehicle.plate_number,
             }
             
             const schema = {
                 name: { type: "string", min: 3 },
-                type: { type: "string", enum: ['sedan', 'SUV', 'hatchback', 'coupe', 'sport'] },
-                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
+                type: { type: "string", enum: ['sedan', 'hatchback', 'coupe', 'sport', 'LCGC', 'SUV', 'MPV'] },
                 transmission: { type: "string", enum: ['manual', 'automatic'] },
+                passengers: { type: "number", positive: true, integer: true },
+                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
                 price_per_day: { type: "number", positive: true, integer: true },
                 description: { type: "string" },
+                plate_number: { type: "string", min: 3 },
             }
 
             const validate = v.validate(data, schema);
@@ -81,7 +92,31 @@ module.exports = {
                 return res.status(400).json(response(400, "Validasi Error", validate))
             }
 
-            await vehicle.update(data);
+            if (req.file) {
+                // karna image udah diganti jadi link di getter model, jdi ambil yang aslinya pake getDataValue
+                const imageName = vehicle.getDataValue('image');
+                // cari image ke folder uploads
+                const filePath = path.join(__dirname, '../uploads', imageName);
+                // cek jika file ada di folder tsb
+                if (fs.existsSync(filePath)) {
+                    // hapus file
+                    fs.unlinkSync(filePath);
+                }
+            }
+
+            const updateProcess =  await Vehicle.update({
+                name: data.name,
+                type: data.type,
+                transmission: data.transmission,
+                passengers: data.passengers,
+                fuel_type: data.fuel_type,
+                price_per_day: data.price_per_day,
+                description: data.description,
+                plate_number: data.plate_number,
+                image: (req.file ? req.file.filename : vehicle.getDataValue("image"))
+            }, {
+                where: { id: id }
+            });
 
             const newVehicle = await Vehicle.findByPk(id);
 
@@ -99,6 +134,12 @@ module.exports = {
                 return res.status(400).json(response(400, "Validasi Error", "Data Vehicle not found!"))
             }
 
+            const imageName = vehicle.getDataValue('image');
+            const filePath = path.join(__dirname, '../uploads', imageName);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+
             const deleteProcess = await Vehicle.destroy({
                 where: { id, id }
             })
@@ -110,9 +151,7 @@ module.exports = {
     },
     getVehicle: async (req, res) => {
         try {
-            const vehicles = await Vehicle.findAll({
-                include: { model: Vehicle_unit }
-            });
+            const vehicles = await Vehicle.findAll();
 
             return res.status(200).json(response(200, "Success get all vehicles", vehicles));
         } catch (error) {
