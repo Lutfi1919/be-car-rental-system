@@ -2,12 +2,15 @@ const Validator = require("fastest-validator");
 const v = new Validator();
 const { Vehicle_unit, Vehicle, Vehicle_image } = require('../models')
 const { response } = require('../helpers/response.formatter');
+const fs = require('fs'); // file system, melakukan sesuai yg berhubungan dengan lokasi file / nyari lokasi terus mau diapain
+const path = require('path');
 
 // CERUD vehicle_unit : done
 module.exports = {
     createVehicleUnit: async (req, res) => {
         try {
             const { vehicle_id, plate_number } = req.body;
+            const { image } = req.file;
 
             const schema = {
                 vehicle_id: { type: "number", positive: true, integer: true },
@@ -23,10 +26,15 @@ module.exports = {
             if (validate.length > 0) {
                 return res.status(400).json(response(400, "Validasi Error", validate))
             }
+            
+            if (!req.file) {
+                return res.status(400).json(response(400, "Validasi Error", "Image not found"));
+            }
 
             const vehicleUnit = await Vehicle_unit.create({
                 vehicle_id: data.vehicle_id,
                 plate_number: data.plate_number,
+                image: req.file.filename,
                 status: 'available',
             })
 
@@ -52,6 +60,7 @@ module.exports = {
         try {
             const { id } = req.params;
             const { vehicle_id, plate_number } = req.body;
+            const { image } = req.file;
             
             const vehicleUnit = await Vehicle_unit.findByPk(id)
             if (!vehicleUnit) {
@@ -78,8 +87,26 @@ module.exports = {
                 return res.status(400).json(response(400, "Validasi Error", validate))
             }
 
-            await vehicleUnit.update(data)
-            
+            if (req.file) {
+                // karna image udah diganti jadi link di getter model, jdi ambil yang aslinya pake getDataValue
+                const imageName = vehicleUnit.getDataValue('image');
+                // cari image ke folder uploads
+                const filePath = path.join(__dirname, '../uploads', imageName);
+                // cek jika file ada di folder tsb
+                if (fs.existsSync(filePath)) {
+                    // hapus file
+                    fs.unlinkSync(filePath);
+                }
+            }
+
+            const updateProcess = await Vehicle_unit.update({
+                vehicle_id: data.vehicle_id,
+                plate_number: data.plate_number,
+                image: (req.file ? req.file.filename : item.getDataValue("image"))
+            }, {
+                where: {id: id}
+            });  
+
             const newVehicleUnit = await Vehicle_unit.findByPk(id);
             return res.status(200).json(response(200, "Success update vehicle", newVehicleUnit));
         } catch (error) {
@@ -144,6 +171,12 @@ module.exports = {
                 return res.status(400).json(response(400, "Validasi Errpr", "Data vehicle unit not found!"))
             }
 
+            const imageName = vehicleUnit.getDataValue('vehicle_unit_image');
+            const filePath = path.join(__dirname, '../uploads', imageName);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+
             await vehicleUnit.destroy({
                 where: { id, id }
             })
@@ -156,10 +189,7 @@ module.exports = {
     getVehicleUnit: async (req, res) => {
         try {
             const vehicleUnits = await Vehicle_unit.findAll({
-                include: [
-                    { model: Vehicle },
-                    { model: Vehicle_image },
-                ]
+                include: { model: Vehicle }
             })
 
             return res.status(200).json(response(200, "Success get all vehicle units", vehicleUnits))
