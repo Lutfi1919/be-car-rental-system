@@ -12,12 +12,55 @@ const path = require('path');
 module.exports = {
     getUser: async (req, res) => {
         try {
+            const { name, sortBy, order, page, limit } = req.query;
+            const offset = (Number(page) - 1) * Number(limit);
+
             const users = await User.findAll({
                 attributes: { exclude: ['password'] },
                 include: { model: Verification }
             });
 
-            return res.status(200).json(response(200, "Success get all users", users));
+            const {count, rows} = await User.findAndCountAll({
+                attributes: { exclude: ['password'] },
+                include: { model: Verification },
+                where: name ? {
+                    name: {
+                        [Op.like]: `%${name}%`
+                    }
+                } : {},
+                order: sortBy && order ? [
+                    [sortBy, order]
+                ] : [], // cari berdasarkan field name di db dari name req.query
+                offset: Number(offset),
+                limit: Number(limit),
+            });
+
+            const formatPagination = {
+                data: rows,
+                limit: limit,
+                rows: (Number(offset) + 1) + " to " + (Number(offset) + rows.length), 
+                total: count,
+                page: page,
+            }
+
+
+            return res.status(200).json(response(200, "Success get all users", formatPagination));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
+    getProfile: async (req, res) => {
+        try {
+            const user = await User.findByPk(req.user.userId, {
+                attributes: { exclude: ['password'] },
+                include: { model: Verification }
+            });
+
+            if (!user) {
+                return res.status(400).json(response(400, "User not found"));
+            }
+
+            return res.status(200).json(response(200, "Success get profile", user));
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
