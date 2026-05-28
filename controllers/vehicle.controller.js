@@ -2,6 +2,8 @@ const Validator = require("fastest-validator");
 const v = new Validator();
 const { Vehicle } = require('../models')
 const { response } = require('../helpers/response.formatter');
+const fs = require('fs'); // file system, melakukan sesuai yg berhubungan dengan lokasi file / nyari lokasi terus mau diapain
+const path = require('path');
 
 // CERUD vehicle: done
 module.exports = {
@@ -15,7 +17,7 @@ module.exports = {
                 type: { type: "string", enum: ['sedan', 'hatchback', 'coupe', 'sport', 'LCGC', 'SUV', 'MPV'] },
                 transmission: { type: "string", enum: ['manual', 'automatic'] },
                 passengers: { type: "number", positive: true, integer: true },
-                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
+                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel', 'electric'] },
                 price_per_day: { type: "number", positive: true, integer: true },
                 description: { type: "string" },
                 plate_number: { type: "string", min: 3 },
@@ -81,7 +83,7 @@ module.exports = {
                 type: { type: "string", enum: ['sedan', 'hatchback', 'coupe', 'sport', 'LCGC', 'SUV', 'MPV'] },
                 transmission: { type: "string", enum: ['manual', 'automatic'] },
                 passengers: { type: "number", positive: true, integer: true },
-                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel'] },
+                fuel_type: { type: "string", enum: ['pertalite', 'pertamax', 'pertamax_turbo', 'diesel', 'electric'] },
                 price_per_day: { type: "number", positive: true, integer: true },
                 description: { type: "string" },
                 plate_number: { type: "string", min: 3 },
@@ -125,6 +127,41 @@ module.exports = {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
     },
+    changeStatus: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+
+            const schema = {
+                status: { type: "string", enum: ['available', 'maintenance'] }
+            }
+
+            const data = {
+                status: status
+            }
+
+            const vehicle = await Vehicle.findByPk(id);
+            if (!vehicle) {
+                return res.status(400).json(response(400, "Validasi Error", "Vehicle data not found!"));
+            }
+
+            const validate = v.validate(data, schema);
+            if (validate.length > 0) {
+                return res.status(400).json(response(400, "Validasi Error", validate))
+            }
+
+
+            await vehicle.update({
+                status: data.status
+            });
+
+            const newVehicle = await Vehicle.findByPk(id);
+
+            return res.status(200).json(response(200, "Vehicle status has been changed!", newVehicle));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
     deleteVehicle: async (req, res) => {
         try {
             const { id } = req.params;
@@ -158,4 +195,17 @@ module.exports = {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
     },
+    showVehicle: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const vehicle = await Vehicle.findByPk(id);
+            if (!vehicle) {
+                return res.status(400).json(response(400, "Data [id] not found"));
+            }
+            return res.status(200).json(response(200, "Success show requested vehicle!", vehicle));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    }
 }
