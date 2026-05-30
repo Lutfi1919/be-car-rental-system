@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Return, Booking, Booking_item, Vehicle_unit } = require('../models')
+const { Return, Booking, Booking_item, Vehicle } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -47,18 +47,6 @@ module.exports = {
             
             await booking.update({
                 status: 'completed'
-            })
-
-            const vehicleUnitsId = bookingItems.map(item => {
-                return item.vehicle_unit_id
-            })
-
-            await Vehicle_unit.update({
-                status: 'available'
-            }, { 
-                where: { 
-                    id: vehicleUnitsId 
-                }
             })
 
             return res.status(201).json(response(201, 'created', returned))
