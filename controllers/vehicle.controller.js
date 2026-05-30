@@ -75,7 +75,7 @@ module.exports = {
                 fuel_type: fuel_type?.trim() ? fuel_type : vehicle.fuel_type,
                 price_per_day: price_per_day ? Number(price_per_day) : vehicle.price_per_day,
                 description: description?.trim() ? description : vehicle.description,
-                plate_number: plate_number ? Number(plate_number) : vehicle.plate_number,
+                plate_number: plate_number ? plate_number : vehicle.plate_number,
             }
             
             const schema = {
@@ -89,8 +89,10 @@ module.exports = {
                 plate_number: { type: "string", min: 3 },
             }
 
+            
             const validate = v.validate(data, schema);
             if (validate.length > 0) {
+                console.log(validate);
                 return res.status(400).json(response(400, "Validasi Error", validate))
             }
 
@@ -178,7 +180,7 @@ module.exports = {
             }
 
             const deleteProcess = await Vehicle.destroy({
-                where: { id, id }
+                where: { id: id }
             })
 
             return res.status(200).json(response(200, "deleted"));
