@@ -15,14 +15,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "booking_id"
       })
       
-      Booking_item.belongsTo(models.Vehicle_unit, {
-        foreignKey: "vehicle_unit_id"
+      Booking_item.belongsTo(models.Vehicle, {
+        foreignKey: "vehicle_id"
       })
     }
   }
   Booking_item.init({
     booking_id: DataTypes.BIGINT,
-    vehicle_unit_id: DataTypes.BIGINT,
+    vehicle_id: DataTypes.BIGINT,
     price_per_day: DataTypes.INTEGER,
     start_date: DataTypes.DATE,
     end_date: DataTypes.DATE,
