@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.BIGINT
       },
+      booking_code: {
+        type: Sequelize.STRING
+      },
       user_id: {
         type: Sequelize.BIGINT
       },
@@ -18,11 +21,14 @@ module.exports = {
       total_price: {
         type: Sequelize.INTEGER
       },
+      paid_amount: {
+        type: Sequelize.INTEGER
+      },
       remaining_payment: {
         type: Sequelize.INTEGER
       },
       payment_status: {
-        type: Sequelize.ENUM('unpaid', 'dp_paid', 'paid')
+        type: Sequelize.ENUM('unpaid', 'partial', 'paid', 'refunded')
       },
       status: {
         type: Sequelize.ENUM('pending', 'confirmed', 'on_rent', 'completed', 'canceled')

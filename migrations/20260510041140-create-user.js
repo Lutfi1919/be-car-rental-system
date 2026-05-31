@@ -23,7 +23,7 @@ module.exports = {
       },
       profile_image: {
         type: Sequelize.STRING,
-        defaultValue: '/images/default-pfp.jpg'
+        defaultValue: 'default-pfp.jpg'
       },
       role: {
         type: Sequelize.ENUM('admin', 'user'),

@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       fuel_type: {
-        type: Sequelize.ENUM('pertalite', 'pertamax', 'pertamax_turbo', 'diesel')
+        type: Sequelize.ENUM('pertalite', 'pertamax', 'pertamax_turbo', 'diesel', 'electric')
       },
       price_per_day: {
         type: Sequelize.INTEGER
@@ -37,7 +37,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.ENUM('available', 'on_rent', 'maintenance')
+        type: Sequelize.ENUM('available', 'maintenance')
       },
       createdAt: {
         allowNull: false,
