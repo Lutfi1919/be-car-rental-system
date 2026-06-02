@@ -78,10 +78,6 @@ module.exports = {
                 subtotal: subtotal * packagePrice, 
             }, { transaction });
 
-            await vehicle.update({
-                status: 'on_rent'
-            }, { transaction });
-
             const allBookingItems = await Booking_item.findAll({
                 where: {
                     booking_id: data.booking_id
