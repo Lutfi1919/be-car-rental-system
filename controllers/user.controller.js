@@ -132,6 +132,7 @@ module.exports = {
             })
             
             const newUser = await User.findByPk(id);
+            
             return res.status(200).json(response(200, "success", newUser));
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))

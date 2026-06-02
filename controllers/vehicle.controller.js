@@ -60,7 +60,7 @@ module.exports = {
     updateVehicle: async (req, res) => {
         try {
             const { id } = req.params;
-            const { name, type, transmission, passengers, fuel_type, price_per_day, description, plate_number } = req.body;
+            const { name, type, transmission, passengers, fuel_type, price_per_day, description, plate_number, status } = req.body;
  
             const vehicle = await Vehicle.findByPk(id);
             if (!vehicle) {
@@ -76,6 +76,7 @@ module.exports = {
                 price_per_day: price_per_day ? Number(price_per_day) : vehicle.price_per_day,
                 description: description?.trim() ? description : vehicle.description,
                 plate_number: plate_number ? plate_number : vehicle.plate_number,
+                status: status?.trim() ? status : vehicle.status,
             }
             
             const schema = {
@@ -87,6 +88,7 @@ module.exports = {
                 price_per_day: { type: "number", positive: true, integer: true },
                 description: { type: "string" },
                 plate_number: { type: "string", min: 3 },
+                status: { type: "string", enum: ['available', 'maintenance'] },
             }
 
             
@@ -117,6 +119,7 @@ module.exports = {
                 price_per_day: data.price_per_day,
                 description: data.description,
                 plate_number: data.plate_number,
+                status: data.status,
                 image: (req.file ? req.file.filename : vehicle.getDataValue("image"))
             }, {
                 where: { id: id }
@@ -125,41 +128,6 @@ module.exports = {
             const newVehicle = await Vehicle.findByPk(id);
 
             return res.status(200).json(response(200, "Success update vehicle", newVehicle));
-        } catch (error) {
-            return res.status(500).json(response(500, "Server Error", error.message))
-        }
-    },
-    changeStatus: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const { status } = req.body;
-
-            const schema = {
-                status: { type: "string", enum: ['available', 'maintenance'] }
-            }
-
-            const data = {
-                status: status
-            }
-
-            const vehicle = await Vehicle.findByPk(id);
-            if (!vehicle) {
-                return res.status(400).json(response(400, "Validasi Error", "Vehicle data not found!"));
-            }
-
-            const validate = v.validate(data, schema);
-            if (validate.length > 0) {
-                return res.status(400).json(response(400, "Validasi Error", validate))
-            }
-
-
-            await vehicle.update({
-                status: data.status
-            });
-
-            const newVehicle = await Vehicle.findByPk(id);
-
-            return res.status(200).json(response(200, "Vehicle status has been changed!", newVehicle));
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }

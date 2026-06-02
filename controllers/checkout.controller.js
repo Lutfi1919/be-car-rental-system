@@ -214,7 +214,7 @@ module.exports = {
                 payment_type: payment_type,
                 amount: paidAmount,
                 status: method === "cash" ? "paid" : "pending",
-                paid_at: method === "online_payment" ? new Date() : null
+                paid_at: method === "online_payment" ? null : new Date()
             }, { transaction });
 
 
