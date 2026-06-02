@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.ENUM('cash', 'online_payment')
       },
       payment_type: {
-        type: Sequelize.ENUM('dp', 'settlement', 'full_payment', 'refund')
+        type: Sequelize.ENUM('dp', 'settlement', 'full_payment', 'additional_fee', 'refund')
       },
       amount: {
         type: Sequelize.INTEGER

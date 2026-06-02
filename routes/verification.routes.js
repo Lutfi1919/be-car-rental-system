@@ -12,7 +12,8 @@ router.post(
     ]), 
     verificationController.createVerification
 );
-router.post('/:id', upload.none(), verificationController.updateVerification);
+router.patch('/:id', upload.none(), verificationController.updateVerification);
 router.get('/', verificationController.getVerification);
+router.delete('/:id', verificationController.deleteVerification);
 
 module.exports = router

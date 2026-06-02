@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Return, Booking, Booking_item, Vehicle } = require('../models')
+const { Return, Booking, Booking_item, Vehicle, Payment } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -43,7 +43,19 @@ module.exports = {
                 return res.status(400).json(response(400, "Data booking items not found!"))
             }
 
-            const returned = await Return.create(data)
+            const returned = await Return.create(data);
+
+            const additionalAmount = data.late_fee + data.damage_fee;
+
+            if (additionalAmount > 0) {
+                await Payment.create({
+                    booking_id: booking.id,
+                    amount: additionalAmount,
+                    payment_type: "additional_fee",
+                    status: "pending",
+                    method: null
+                })
+            }
             
             await booking.update({
                 status: 'completed'

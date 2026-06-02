@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   Payment.init({
     booking_id: DataTypes.BIGINT,
     method: DataTypes.ENUM('cash', 'online_payment'),
-    payment_type: DataTypes.ENUM('dp', 'settlement', 'full_payment', 'refund'),
+    payment_type: DataTypes.ENUM('dp', 'settlement', 'full_payment', 'additional_fee', 'refund'),
     amount: DataTypes.INTEGER,
     status: DataTypes.ENUM('pending', 'paid', 'failed'),
     paid_at: DataTypes.DATE

@@ -79,7 +79,9 @@ module.exports = {
                 email: data.email,
                 password: data.newPassword,
                 phoneNum: data.phoneNum,
+                role: 'user'
             })
+            
             return res.status(201).json(response(201, 'created', user));
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))

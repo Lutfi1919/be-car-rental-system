@@ -3,10 +3,15 @@ const router = express.Router();
 
 const vehicleController = require('../controllers/vehicle.controller')
 const upload = require('../middlewares/upload')
+const { checkToken } = require('../middlewares/auth')
 
-router.post('/', upload.none(), vehicleController.createVehicle)
+router.post('/', upload.single('image'), vehicleController.createVehicle);
+
+router.put('/:id', checkToken, upload.single('image'), vehicleController.updateVehicle);
+router.patch('/:id', checkToken, upload.none(), vehicleController.changeStatus);
+router.delete('/:id', checkToken, vehicleController.deleteVehicle);
+
 router.get('/', vehicleController.getVehicle)
-router.put('/:id', upload.none(), vehicleController.updateVehicle);
-router.delete('/:id', vehicleController.deleteVehicle);
+router.get('/:id', vehicleController.showVehicle);
 
 module.exports = router

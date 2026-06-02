@@ -1,6 +1,6 @@
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { Booking, Booking_item, Booking_package, Vehicle_unit, Return, User } = require('../models')
+const { Booking, Booking_item, Booking_package, Vehicle, Return, User, Payment } = require('../models')
 const { response } = require('../helpers/response.formatter');
 
 module.exports = {
@@ -38,6 +38,8 @@ module.exports = {
                     user_id: data.user_id,
                     booking_package_id: data.booking_package_id,
                     total_price: 0,
+                    remaining_payment: 0,
+                    payment_status: 'unpaid',
                     status: 'pending'
                 })
 
@@ -54,13 +56,64 @@ module.exports = {
         try {
             const bookings = await Booking.findAll({
                 include: [
-                    { model: Booking_item },
+                    { model: User },
+                    { model: Booking_item, include: { model: Vehicle } },
                     { model: Return },
+                ],
+                order: [
+                    ["createdAt", "DESC"]
                 ]
             });
 
             return res.status(200).json(response(200, "Success get all bookings data", bookings));
             
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
+    showBooking: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const booking = await Booking.findByPk(id, {
+                include: [
+                    { model: User },
+                    { model: Booking_item, include: { model: Vehicle } },
+                    { model: Return },
+                    { model: Booking_package },
+                    { model: Payment },
+                ]
+            });
+            if (!booking) {
+                return res.status(400).json(response(400, "Data [id] not found"));
+            }
+
+            return res.status(200).json(response(200, "Success show requested booking!", booking));
+        } catch (error) {
+            return res.status(500).json(response(500, "Server Error", error.message))
+        }
+    },
+    getUserBooking: async (req, res) => {
+        try {
+            const booking = await Booking.findAll({
+                where: {
+                    user_id: req.user.userId
+                },
+                include: [
+                    { model: Booking_item, include: [ { model: Vehicle } ] }, 
+                    { model: Payment }
+                ],
+                order: [
+                    ['createdAt', 'DESC']
+                ]
+            });
+
+            if (booking.length === 0) {
+                return res.status(400).json(response(400, "User booking not found!"));
+            }
+
+            return res.status(200).json(response(200, "Success get all user bookings data", booking));
+
         } catch (error) {
             return res.status(500).json(response(500, "Server Error", error.message))
         }
@@ -71,7 +124,7 @@ module.exports = {
             const { status } = req.body;
 
             const schema = {
-                status: { type: "string", enum: ['completed', 'canceled'] }
+                status: { type: "string", enum: ['completed', 'canceled', 'confirmed', 'on_rent'] }
             }
 
             const data = {
@@ -83,34 +136,59 @@ module.exports = {
                 return res.status(400).json(response(400, "Validasi Error", validate))
             }
             
-            const booking = await Booking.findByPk(id);
+            const booking = await Booking.findByPk(id, {
+                include: [
+                    { model: Booking_package },
+                    { model: Payment },
+                ]
+            });
             if (!booking) {
                 return res.status(400).json(response(400, "Data booking not found, please check [booking_id] value"));
+            }
+
+            if (data.status === 'canceled') {
+                const dpPayment = booking.Payments.find(payment => {
+                    return (
+                        payment.payment_type === 'dp' && payment.status === 'paid'
+                    )
+                })
+
+                if (dpPayment) {
+                    if (data.status === "canceled" && ["on_rent", "completed"].includes(booking.status)) {
+                        return res.status(400).json(response(400, "Booking cannot be cancelled"));
+                    }
+
+                    if (booking.Booking_package.can_refund_dp === true) {
+                        await Payment.create({
+                            booking_id: booking.id,
+                            method: dpPayment.method,
+                            payment_type: 'refund',
+                            amount: dpPayment.amount,
+                            status: 'paid',
+                            paid_at: new Date()
+                        })
+
+                        await booking.update({
+                            payment_status: 'refunded'
+                        });
+                    }
+                }
+            }
+
+            if (booking.status === data.status) {
+                return res.status(400).json(response(400, `Booking already ${data.status}`));
             }
 
             await booking.update({
                 status: data.status
             });
 
-            if (booking.status === 'canceled' || booking.status === 'completed') {
-                const bookingItems = await Booking_item.findAll({
-                    where: {
-                        booking_id: id
-                    }
-                })
-
-                const vehicleUnitsId = bookingItems.map(item => {
-                    return item.vehicle_unit_id
-                })
-
-                await Vehicle_unit.update(
-                    { status: 'available' },
-                    { where: { id: vehicleUnitsId } }
-                )
-            }
-
             const newBooking = await Booking.findByPk(id, {
-                include: { model: Booking_item }
+                include: [
+                    { model: Booking_item },
+                    { model: Payment },
+                    { model: Booking_package },
+                ]
             })
 
             return res.status(200).json(response(200, "Success change booking status", newBooking));
