@@ -154,7 +154,7 @@ module.exports = {
                 })
 
                 if (dpPayment) {
-                    if (data.status === "canceled" && ["on_rent", "completed"].includes(booking.status)) {
+                    if (data.status === "canceled" && (booking.status === "on_rent" || booking.status === "completed")) {
                         return res.status(400).json(response(400, "Booking cannot be cancelled"));
                     }
 
