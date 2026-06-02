@@ -68,15 +68,15 @@ module.exports = {
             }
             
             const data = {
-                name: name?.trim() ? name : vehicle.name,
-                type: type?.trim() ? type : vehicle.type,
-                transmission: transmission?.trim() ? transmission : vehicle.transmission,
+                name: name ? name : vehicle.name,
+                type: type ? type : vehicle.type,
+                transmission: transmission ? transmission : vehicle.transmission,
                 passengers: passengers ? Number(passengers) : vehicle.passengers,
-                fuel_type: fuel_type?.trim() ? fuel_type : vehicle.fuel_type,
+                fuel_type: fuel_type ? fuel_type : vehicle.fuel_type,
                 price_per_day: price_per_day ? Number(price_per_day) : vehicle.price_per_day,
-                description: description?.trim() ? description : vehicle.description,
+                description: description ? description : vehicle.description,
                 plate_number: plate_number ? plate_number : vehicle.plate_number,
-                status: status?.trim() ? status : vehicle.status,
+                status: status ? status : vehicle.status,
             }
             
             const schema = {

@@ -47,16 +47,6 @@ module.exports = {
 
             const additionalAmount = data.late_fee + data.damage_fee;
 
-            if (additionalAmount > 0) {
-                await Payment.create({
-                    booking_id: booking.id,
-                    amount: additionalAmount,
-                    payment_type: "additional_fee",
-                    status: "pending",
-                    method: null
-                })
-            }
-            
             await booking.update({
                 status: 'completed'
             })

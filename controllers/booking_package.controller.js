@@ -53,10 +53,10 @@ module.exports = {
             };
 
             const data = {
-                name:name?.trim() ? name : bookingPackage.name,
+                name:name ? name : bookingPackage.name,
                 price_multiplier: price_multiplier !== undefined && price_multiplier !== '' ? Number(price_multiplier) : bookingPackage.price_multiplier,
                 can_refund_dp: can_refund_dp !== undefined ? can_refund_dp === 'true' ? true : false : bookingPackage.can_refund_dp,
-                description: description?.trim() ? description : bookingPackage.description
+                description: description ? description : bookingPackage.description
             };
 
             const validate = v.validate(data, schema);
