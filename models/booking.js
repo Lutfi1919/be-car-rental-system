@@ -34,17 +34,17 @@ module.exports = (sequelize, DataTypes) => {
   }
   Booking.init({
     booking_code: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
     },
     user_id: DataTypes.BIGINT,
     booking_package_id: DataTypes.BIGINT,
     total_price: DataTypes.INTEGER,
     paid_amount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     },
     remaining_payment: DataTypes.INTEGER,
     payment_status: DataTypes.ENUM('unpaid', 'partial', 'paid', 'refunded'),
