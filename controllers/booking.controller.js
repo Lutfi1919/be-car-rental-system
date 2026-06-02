@@ -147,10 +147,12 @@ module.exports = {
             }
 
             if (data.status === 'canceled') {
-                const dpPayment = booking.Payments.find(payment => {
-                    return (
-                        payment.payment_type === 'dp' && payment.status === 'paid'
-                    )
+                const dpPayment = booking.Payments.findOne({
+                    where: {
+                        booking_id: booking.id,
+                        payment_type: 'dp',
+                        status: 'paid'
+                    }
                 })
 
                 if (dpPayment) {
