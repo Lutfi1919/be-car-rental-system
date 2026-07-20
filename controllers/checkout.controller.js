@@ -49,7 +49,7 @@ module.exports = {
                 return res.status(400).json(response(400, "Validation Error", validate));
             }
 
-
+            // buat variable untuk nampung inputan date
             const parsedStartDate = new Date(start_date);
             const parsedEndDate = new Date(end_date);
 
@@ -68,7 +68,7 @@ module.exports = {
                 return res.status(400).json(response(400, "End date must be greater than start date"));
             }
 
-
+            // cari user dan statusny
             const user = await User.findByPk(user_id, {
                 transaction
             });
@@ -85,7 +85,7 @@ module.exports = {
                 return res.status(400).json(response(400, "User is not verified"));
             }
 
-
+            // cari vehicle
             const vehicle = await Vehicle.findByPk(vehicle_id, {
                 transaction
             });
@@ -102,7 +102,7 @@ module.exports = {
                 return res.status(400).json(response(400, "Vehicle is under maintenance"));
             }
 
-
+            // cari booking
             const bookingPackage = await Booking_package.findByPk(
                 booking_package_id,
                 { transaction }
@@ -114,7 +114,7 @@ module.exports = {
                 return res.status(404).json(response(404, "Booking package not found"));
             }
 
-
+            // cari vehicle tertentu yang bookingannya ke timpa
             const overlappingBooking = await Booking_item.findOne({
                 where: {
                     vehicle_id: vehicle_id,
@@ -150,16 +150,16 @@ module.exports = {
                 return res.status(400).json(response(400, "Vehicle already booked on selected dates"));
             }
 
-
+            // buat hitung total hari 
             const diffTime = parsedEndDate.getTime() - parsedStartDate.getTime();
             const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
  
-
+            // harga sebelum di gabung sama paket
             const basePrice = vehicle.price_per_day * totalDays;
-
+            // harga setelah digabung
             const totalPrice = basePrice * bookingPackage.price_multiplier;
 
-
+            //buat variable wadah
             let paidAmount = 0;
             let remainingPayment = 0;
             let paymentStatus = "unpaid";

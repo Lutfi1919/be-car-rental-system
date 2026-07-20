@@ -5,7 +5,7 @@ const vehicleController = require('../controllers/vehicle.controller')
 const upload = require('../middlewares/upload')
 const { checkToken } = require('../middlewares/auth')
 
-router.post('/', upload.single('image'), vehicleController.createVehicle);
+router.post('/', checkToken, upload.single('image'), vehicleController.createVehicle);
 
 router.put('/:id', checkToken, upload.single('image'), vehicleController.updateVehicle);
 router.delete('/:id', checkToken, vehicleController.deleteVehicle);
