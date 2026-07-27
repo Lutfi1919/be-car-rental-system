@@ -1,9 +1,9 @@
 const express = require('express')
 const app = express()
 const port = 4000
+const db = require('./models')
 const cors = require('cors')
 
-const db = require('./models')
 const methodOverride = require('method-override')
 const { checkToken } = require('./middlewares/auth')
 const loginRoutes = require('./routes/login.routes')
